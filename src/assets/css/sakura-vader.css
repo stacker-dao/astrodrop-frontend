@@ -81,12 +81,12 @@ small, sub, sup {
 }
 
 hr {
-  border-color: #eb99a1;
+  border-color: #4E35F2;
 }
 
 a {
   text-decoration: none;
-  color: #eb99a1;
+  color: #4E35F2;
 }
 
 a:hover {
@@ -115,7 +115,7 @@ blockquote {
   padding-top: 0.8em;
   padding-bottom: 0.8em;
   padding-right: 0.8em;
-  border-left: 5px solid #eb99a1;
+  border-left: 5px solid #4E35F2;
   margin-bottom: 2.5rem;
   background-color: #40363a;
 }
@@ -175,7 +175,7 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-  border: 1px solid #eb99a1;
+  border: 1px solid #4E35F2;
 }
 
 textarea {
@@ -188,10 +188,10 @@ textarea {
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
-  background-color: #eb99a1;
+  background-color: #4E35F2;
   color: #120c0e;
   border-radius: 1px;
-  border: 1px solid #eb99a1;
+  border: 1px solid #4E35F2;
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -221,12 +221,12 @@ textarea, select, input {
 }
 
 textarea:focus, select:focus, input:focus {
-  border: 1px solid #eb99a1;
+  border: 1px solid #4E35F2;
   outline: 0;
 }
 
 input[type="checkbox"]:focus {
-  outline: 1px dotted #eb99a1;
+  outline: 1px dotted #4E35F2;
 }
 
 label, legend, fieldset {

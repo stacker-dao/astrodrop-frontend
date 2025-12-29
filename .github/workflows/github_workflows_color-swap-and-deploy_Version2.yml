@@ -1,4 +1,4 @@
-name: Color swap, build and deploy to gh-pages
+name: Build, color-swap and deploy to stacker-dao/astrodrop (gh-pages)
 
 on:
   workflow_dispatch:
@@ -24,16 +24,20 @@ on:
         required: true
         default: 'dist/merkle-drop'
       pages_branch:
-        description: 'Branch to push built assets to (GitHub Pages branch)'
+        description: 'Branch to push built assets to (GitHub Pages branch on target repo)'
         required: true
         default: 'gh-pages'
       commit_source_changes:
         description: 'If "true", commit color replacements back to the current branch'
         required: true
         default: 'true'
+      target_repo:
+        description: 'Repository to publish to (owner/repo)'
+        required: true
+        default: 'stacker-dao/astrodrop'
 
 jobs:
-  replace-build-deploy:
+  build-and-deploy-to-external:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,29 +45,40 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate CROSS_REPO_PAT secret present
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.CROSS_REPO_PAT }}" ]; then
+            echo "ERROR: The secret CROSS_REPO_PAT is not set in this repository."
+            echo "Create a Personal Access Token (classic) with repo permissions and add it as the CROSS_REPO_PAT secret."
+            exit 1
+          fi
+          echo "CROSS_REPO_PAT appears present (masked)."
+
       - name: Set up Node.js (Node 14 for Angular 10/11 compatibility)
         uses: actions/setup-node@v4
         with:
           node-version: '14'
 
-      - name: Resolve inputs (debug)
+      - name: Resolve inputs and show values
         shell: bash
         run: |
-          # Use GitHub inputs with fallbacks to sensible defaults for robustness
           COLOR_FROM="${{ github.event.inputs.color_from || '#eb99a1' }}"
           COLOR_TO="${{ github.event.inputs.color_to || '#4E35F2' }}"
           BASE_HREF="${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
           BUILD_COMMAND="${{ github.event.inputs.build_command || 'npm install --legacy-peer-deps graphql@15.8.0 && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
           PUBLISH_DIR="${{ github.event.inputs.publish_dir || 'dist/merkle-drop' }}"
           PAGES_BRANCH="${{ github.event.inputs.pages_branch || 'gh-pages' }}"
+          TARGET_REPO="${{ github.event.inputs.target_repo || 'stacker-dao/astrodrop' }}"
           COMMIT_SOURCE_CHANGES="${{ github.event.inputs.commit_source_changes || 'true' }}"
-          echo "Inputs resolved:"
+          echo "Inputs resolved (masked where appropriate):"
           echo "  COLOR_FROM=${COLOR_FROM}"
           echo "  COLOR_TO=${COLOR_TO}"
           echo "  BASE_HREF=${BASE_HREF}"
           echo "  BUILD_COMMAND=${BUILD_COMMAND}"
           echo "  PUBLISH_DIR=${PUBLISH_DIR}"
           echo "  PAGES_BRANCH=${PAGES_BRANCH}"
+          echo "  TARGET_REPO=${TARGET_REPO}"
           echo "  COMMIT_SOURCE_CHANGES=${COMMIT_SOURCE_CHANGES}"
 
       - name: Replace color across repository (case-insensitive)
@@ -72,15 +87,13 @@ jobs:
           set -eo pipefail
           COLOR_FROM="${{ github.event.inputs.color_from || '#eb99a1' }}"
           COLOR_TO="${{ github.event.inputs.color_to || '#4E35F2' }}"
-          # Search only tracked files to avoid touching build artifacts or node_modules
-          FILES=$(git ls-files '*.css' '*.scss' '*.sass' '*.less' '*.html' '*.htm' '*.ts' '*.tsx' '*.js' '*.jsx' || true)
+          FILES=$(git ls-files '*.css' '*.scss' '*.sass' '*.less' '*.html' '*.htm' '*.ts' '*.tsx' '*.js' '*.jsx' '*.md' || true)
           if [ -z "$FILES" ]; then
             echo "No candidate files found for replacement; skipping."
             exit 0
           fi
-          echo "Replacing ${COLOR_FROM} -> ${COLOR_TO} in the following tracked files:"
+          echo "Replacing ${COLOR_FROM} -> ${COLOR_TO} in tracked files:"
           echo "$FILES"
-          # perl in-place case-insensitive replacement
           perl -pi -e "s/\Q${COLOR_FROM}\E/${COLOR_TO}/ig" $FILES || true
 
       - name: Commit and push source color-change (optional)
@@ -88,6 +101,8 @@ jobs:
         shell: bash
         run: |
           set -eo pipefail
+          COLOR_FROM="${{ github.event.inputs.color_from || '#eb99a1' }}"
+          COLOR_TO="${{ github.event.inputs.color_to || '#4E35F2' }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if git status --porcelain | grep -q .; then
@@ -102,20 +117,36 @@ jobs:
         shell: bash
         env:
           BASE_HREF: "${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
-          PUBLIC_URL: "${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
-          VITE_BASE: "${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
         run: |
           set -eo pipefail
-          # Allow overriding build command through workflow inputs if needed
           BUILD_CMD="${{ github.event.inputs.build_command || 'npm install --legacy-peer-deps graphql@15.8.0 && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
           echo "Running build command:"
           echo "${BUILD_CMD}"
           bash -lc "${BUILD_CMD}"
 
-      - name: Deploy to GitHub Pages branch
+      - name: Verify build output exists
+        shell: bash
+        run: |
+          PUBLISH_DIR="${{ github.event.inputs.publish_dir || 'dist/merkle-drop' }}"
+          if [ ! -d "$PUBLISH_DIR" ]; then
+            echo "ERROR: build output directory '$PUBLISH_DIR' not found. Build may have failed."
+            ls -la
+            exit 1
+          fi
+          echo "Build output found in $PUBLISH_DIR:"
+          ls -la "$PUBLISH_DIR" | sed -n '1,200p'
+
+      - name: Deploy to stacker-dao/astrodrop (external repository)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CROSS_REPO_PAT }}
           publish_dir: ${{ github.event.inputs.publish_dir || 'dist/merkle-drop' }}
           publish_branch: ${{ github.event.inputs.pages_branch || 'gh-pages' }}
+          external_repository: ${{ github.event.inputs.target_repo || 'stacker-dao/astrodrop' }}
           keep_files: false
+          exclude_assets: .github
+
+      - name: Notify deploy result
+        shell: bash
+        run: |
+          echo "Deployment step completed. If the action succeeded, built files were pushed to ${{ github.event.inputs.target_repo || 'stacker-dao/astrodrop' }}:${{ github.event.inputs.pages_branch || 'gh-pages' }}."

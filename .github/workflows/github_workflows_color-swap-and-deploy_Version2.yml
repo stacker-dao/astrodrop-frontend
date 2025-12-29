@@ -18,7 +18,7 @@ on:
       build_command:
         description: 'Shell command used to build the project'
         required: true
-        default: 'npm ci && npx ng build --configuration production --base-href "$BASE_HREF"'
+        default: 'npm install --legacy-peer-deps && npx ng build --configuration production --base-href \"$BASE_HREF\"'
       publish_dir:
         description: 'Directory containing build output to publish'
         required: true
@@ -44,15 +44,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '14'   # use Node 14 for compatibility with Angular 10/11
 
-      - name: Resolve inputs and show values
+      - name: Resolve inputs (debug)
         run: |
-          # Resolve inputs via GitHub expressions with fallbacks to hardcoded defaults (debug friendly)
           COLOR_FROM="${{ github.event.inputs.color_from || '#eb99a1' }}"
           COLOR_TO="${{ github.event.inputs.color_to || '#4E35F2' }}"
           BASE_HREF="${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
-          BUILD_COMMAND="${{ github.event.inputs.build_command || 'npm ci && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
+          BUILD_COMMAND="${{ github.event.inputs.build_command || 'npm install --legacy-peer-deps && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
           PUBLISH_DIR="${{ github.event.inputs.publish_dir || 'dist/merkle-drop' }}"
           PAGES_BRANCH="${{ github.event.inputs.pages_branch || 'gh-pages' }}"
           COMMIT_SOURCE_CHANGES="${{ github.event.inputs.commit_source_changes || 'true' }}"
@@ -69,10 +68,8 @@ jobs:
       - name: Replace color across repository (case-insensitive)
         run: |
           set -eo pipefail
-          # Use GitHub-provided inputs (or above-resolved defaults)
           COLOR_FROM="${{ github.event.inputs.color_from || '#eb99a1' }}"
           COLOR_TO="${{ github.event.inputs.color_to || '#4E35F2' }}"
-          # List tracked candidate files
           FILES=$(git ls-files '*.css' '*.scss' '*.sass' '*.less' '*.html' '*.htm' '*.ts' '*.tsx' '*.js' '*.jsx' || true)
           if [ -z "$FILES" ]; then
             echo "No candidate files found for replacement; skipping."
@@ -80,7 +77,6 @@ jobs:
           fi
           echo "Replacing ${COLOR_FROM} -> ${COLOR_TO} in the following tracked files:"
           echo "$FILES"
-          # Do case-insensitive in-place replacement with perl
           perl -pi -e "s/\Q${COLOR_FROM}\E/${COLOR_TO}/ig" $FILES || true
         shell: bash
 
@@ -99,16 +95,17 @@ jobs:
           fi
         shell: bash
 
-      - name: Build project
+      - name: Build project (Node 14; install deps with legacy-peer-deps)
         env:
           BASE_HREF: "${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
           PUBLIC_URL: "${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
           VITE_BASE: "${{ github.event.inputs.base_href || 'https://stacker-dao.github.io/astrodrop/' }}"
         run: |
           set -eo pipefail
-          echo "Running build command (as provided):"
-          echo "${{ github.event.inputs.build_command || 'npm ci && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
-          bash -lc "${{ github.event.inputs.build_command || 'npm ci && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
+          echo "Running build command:"
+          echo "${{ github.event.inputs.build_command || 'npm install --legacy-peer-deps && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
+          # Install using npm install so it tolerates lockfile discrepancies; legacy-peer-deps helps older packages
+          bash -lc "${{ github.event.inputs.build_command || 'npm install --legacy-peer-deps && npx ng build --configuration production --base-href \"$BASE_HREF\"' }}"
         shell: bash
 
       - name: Deploy to GitHub Pages branch

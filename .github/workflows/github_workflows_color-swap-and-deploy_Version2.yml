@@ -139,7 +139,7 @@ jobs:
       - name: Deploy to stacker-dao/astrodrop (external repository)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.CROSS_REPO_PAT }}
+          personal_token: ${{ secrets.CROSS_REPO_PAT }}
           publish_dir: ${{ github.event.inputs.publish_dir || 'dist/merkle-drop' }}
           publish_branch: ${{ github.event.inputs.pages_branch || 'gh-pages' }}
           external_repository: ${{ github.event.inputs.target_repo || 'stacker-dao/astrodrop' }}

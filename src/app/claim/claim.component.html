@@ -14,7 +14,7 @@
   </ng-container>
 
   <!-- Title -->
-  <h1 style="margin-bottom: 16px;">
+  <h1 style="margin-bottom: 24px;">
     {{ remoteTree.metadata.name }}
   </h1>
 
@@ -29,7 +29,7 @@
   </div>
 
   <!-- Claim Input (reverted) -->
-  <div style="margin-bottom: 24px;">
+  <div style="margin-bottom: 8px;">
     <label for="claimAddressInput">
       Input your address:
     </label>
@@ -39,12 +39,12 @@
       id="claimAddressInput"
       type="text"
       (input)="claimAddress = $event.target.value"
-      style="margin-top: 8px;"
+      style="margin-top: 8px; width: 600px; height: 40px; box-sizing: border-box;"
     />
 
     <button
       (click)="clickCheck()"
-      style="margin-left: 8px;"
+      style="margin-left: 8px; height: 40px; box-sizing: border-box;"
     >
       Check
     </button>
@@ -69,7 +69,8 @@
       </ng-container>
     </div>
 
-    <button (click)="clickClaim()">
+    <button (click)="clickClaim()"
+      style="margin-left: 8px; height: 40px; box-sizing: border-box;">
       Claim
     </button>
 

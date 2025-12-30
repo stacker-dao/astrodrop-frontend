@@ -19,7 +19,7 @@ body {
   max-width: 38em;
   margin: auto;
   color: #d9d8dc;
-  background-color: #120c0e;
+  background-color: #070226;
   padding: 13px;
 }
 
@@ -90,12 +90,12 @@ a {
 }
 
 a:hover {
-  color: #DA4453;
+  color: #9b8cff;
   border-bottom: 2px solid #d9d8dc;
 }
 
 a:visited {
-  color: #e26f7a;
+  color: #9b8cff;
 }
 
 ul {
@@ -189,7 +189,7 @@ textarea {
   text-decoration: none;
   white-space: nowrap;
   background-color: #4E35F2;
-  color: #120c0e;
+  color: #070226;
   border-radius: 1px;
   border: 1px solid #4E35F2;
   cursor: pointer;
@@ -204,7 +204,7 @@ textarea {
 .button:focus:enabled, .button:hover:enabled, button:focus:enabled, button:hover:enabled, input[type="submit"]:focus:enabled, input[type="submit"]:hover:enabled, input[type="reset"]:focus:enabled, input[type="reset"]:hover:enabled, input[type="button"]:focus:enabled, input[type="button"]:hover:enabled {
   background-color: #DA4453;
   border-color: #DA4453;
-  color: #120c0e;
+  color: #070226;
   outline: 0;
 }
 

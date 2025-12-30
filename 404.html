@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Astrodrop</title>
+  <script>
+    var repo = '/astrodrop';
+    var path = window.location.pathname;
+
+    if (path.startsWith(repo)) {
+      path = path.slice(repo.length);
+    }
+
+    window.location.replace(
+      repo + '/index.html#' + path
+    );
+  </script>
+</head>
+<body></body>
+</html>

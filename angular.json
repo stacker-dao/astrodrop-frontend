@@ -22,6 +22,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
+              "src/404.html"
             ],
             "styles": [
               "src/assets/css/sakura-vader.css",

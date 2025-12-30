@@ -190,6 +190,7 @@ textarea {
   white-space: nowrap;
   background-color: #4E35F2;
   color: #d9d8dc;
+  font-weight: bold;
   border-radius: 1px;
   border: 1px solid #4E35F2;
   cursor: pointer;

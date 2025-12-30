@@ -1,44 +1,125 @@
 <ng-container *ngIf="!finishedLoadingRoot">
   Loading...
 </ng-container>
+
 <ng-container *ngIf="finishedLoadingRoot">
-  <img src={{remoteTree.metadata.logoURL}} style="height: 128px;">
 
-  <h1 style="margin-top: 0%;">{{remoteTree.metadata.name}}</h1>
-
-  <a target="_blank" href="https://etherscan.io/address/{{remoteTree.metadata.contractAddress}}"><small>View
-      smart contract on Etherscan</small></a>
-  <br>
-  <a target="_blank" href="https://etherscan.io/address/{{remoteTree.metadata.tokenAddress}}"><small>View
-      airdropped token on Etherscan</small></a>
-  <br>
-  <small>Expires at {{expirationTime}}</small>
-
-  <label for="claimAddressInput">Claimant address</label>
-  <input id="claimAddressInput" type="text" (input)="claimAddress = $event.target.value">
-  <button (click)="clickCheck()">Check</button>
-
-  <ng-container *ngIf="finishedCheckingClaim && !claimed">
-    <ng-container *ngIf="remoteTree.metadata.tokenType === '20'">
-      <p>Claimable amount: {{claimableAmount}} {{claimTokenSymbol}}</p>
-    </ng-container>
-    <ng-container *ngIf="remoteTree.metadata.tokenType === '721'">
-      <p>Claimable NFT ID: {{claimableAmount}} of {{claimTokenSymbol}}</p>
-    </ng-container>
-    <button (click)="clickClaim()">Claim</button>
+  <!-- Logo (optional) -->
+  <ng-container *ngIf="remoteTree.metadata.logoURL">
+    <img
+      src="{{ remoteTree.metadata.logoURL }}"
+      alt="Airdrop logo"
+      style="height: 96px; margin-bottom: 16px;"
+    />
   </ng-container>
 
-  <p *ngIf="finishedCheckingClaim && claimed">
+  <!-- Title -->
+  <h1 style="margin-bottom: 16px;">
+    {{ remoteTree.metadata.name }}
+  </h1>
+
+  <!-- Description -->
+  <div style="margin-bottom: 28px;">
+    <markdown
+      [data]="remoteTree.metadata.description"
+      lineNumbers
+      emoji
+      katex
+    ></markdown>
+  </div>
+
+  <!-- Claim Input -->
+  <div style="margin-bottom: 24px;">
+
+    <label
+      for="claimAddressInput"
+      style="display: block; margin-bottom: 8px;"
+    >
+      Input your address:
+    </label>
+
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        border: 1px solid #4e35f2;
+        border-radius: 8px;
+        overflow: hidden;
+      "
+    >
+      <input
+        id="claimAddressInput"
+        type="text"
+        (input)="claimAddress = $event.target.value"
+        style="
+          flex: 1;
+          padding: 10px 12px;
+          border: none;
+          outline: none;
+          background: transparent;
+          color: inherit;
+        "
+      />
+
+      <button
+        (click)="clickCheck()"
+        style="
+          border: none;
+          padding: 0 16px;
+          height: 100%;
+          cursor: pointer;
+          background: #4e35f2;
+          color: #fff;
+        "
+      >
+        Check
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Claim Result -->
+  <ng-container *ngIf="finishedCheckingClaim && !claimed">
+
+    <div style="margin-bottom: 16px;">
+      <ng-container *ngIf="remoteTree.metadata.tokenType === '20'">
+        <p>
+          Claimable amount:
+          <strong>{{ claimableAmount }} {{ claimTokenSymbol }}</strong>
+        </p>
+      </ng-container>
+
+      <ng-container *ngIf="remoteTree.metadata.tokenType === '721'">
+        <p>
+          Claimable NFT ID:
+          <strong>{{ claimableAmount }}</strong> of {{ claimTokenSymbol }}
+        </p>
+      </ng-container>
+    </div>
+
+    <button (click)="clickClaim()">
+      Claim
+    </button>
+
+  </ng-container>
+
+  <!-- Already Claimed -->
+  <p *ngIf="finishedCheckingClaim && claimed" style="margin-top: 16px;">
     This address has already claimed from this airdrop.
   </p>
 
+  <!-- Sweep (owner only) -->
   <ng-container *ngIf="sweepEnabled">
-    <p>
-      It appears that you are the owner of this airdrop, and the airdrop has expired. You can sweep the unclaimed tokens
-      into your wallet.
-    </p>
-    <button (click)="clickSweep()">Sweep</button>
+    <div style="margin-top: 32px;">
+      <p>
+        It appears that you are the owner of this airdrop, and the airdrop has expired.
+        You can sweep the unclaimed tokens into your wallet.
+      </p>
+
+      <button (click)="clickSweep()">
+        Sweep
+      </button>
+    </div>
   </ng-container>
 
-  <markdown [data]="remoteTree.metadata.description" lineNumbers emoji katex></markdown>
 </ng-container>

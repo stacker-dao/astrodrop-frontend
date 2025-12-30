@@ -8,13 +8,30 @@
 >
   <!-- Logo / Home -->
   <a routerLink="" style="text-decoration: none;">
-    <h1 class="app-title">Astrodrop</h1>
+    <h1
+      class="app-title"
+      style="
+        margin: 0;
+      "
+    >
+      Astrodrop
+    </h1>
   </a>
 
   <!-- Wallet -->
   <button
-    class="wallet-pill"
     (click)="connectWallet()"
+    style="
+      min-width: 150px;
+      height: 40px;
+      padding: 0 18px;
+      border-radius: 999px;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    "
   >
     <ng-container *ngIf="wallet.connected; else connect">
       0x…{{ wallet.userAddress.slice(-7) }}
@@ -25,4 +42,3 @@
     </ng-template>
   </button>
 </div>
-

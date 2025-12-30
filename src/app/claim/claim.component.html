@@ -19,7 +19,7 @@
   </h1>
 
   <!-- Description -->
-  <div style="margin-bottom: 28px;">
+  <div style="margin-bottom: 24px;">
     <markdown
       [data]="remoteTree.metadata.description"
       lineNumbers
@@ -28,59 +28,26 @@
     ></markdown>
   </div>
 
-  <!-- Claim Input -->
+  <!-- Claim Input (reverted) -->
   <div style="margin-bottom: 24px;">
-
-    <label
-      for="claimAddressInput"
-      style="display: block; margin-bottom: 8px;"
-    >
+    <label for="claimAddressInput">
       Input your address:
     </label>
+    <br />
 
-    <div
-      style="
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid #4e35f2;
-        border-radius: 8px;
-        padding: 6px;
-      "
+    <input
+      id="claimAddressInput"
+      type="text"
+      (input)="claimAddress = $event.target.value"
+      style="margin-top: 8px;"
+    />
+
+    <button
+      (click)="clickCheck()"
+      style="margin-left: 8px;"
     >
-      <input
-        id="claimAddressInput"
-        type="text"
-        (input)="claimAddress = $event.target.value"
-        style="
-          flex: 1;
-          padding: 10px 12px;
-          border: none;
-          outline: none;
-          background: transparent;
-          color: inherit;
-        "
-      />
-
-      <!-- Check Button (fixed) -->
-      <button
-        (click)="clickCheck()"
-        style="
-          height: 40px;
-          padding: 0 18px;
-          border-radius: 8px;
-          border: none;
-          cursor: pointer;
-          background: #4e35f2;
-          color: #ffffff;
-          font-weight: 500;
-          white-space: nowrap;
-        "
-      >
-        Check
-      </button>
-    </div>
-
+      Check
+    </button>
   </div>
 
   <!-- Claim Result -->
@@ -90,39 +57,26 @@
       <ng-container *ngIf="remoteTree.metadata.tokenType === '20'">
         <p>
           Claimable amount:
-          <strong>{{ claimableAmount }} {{ claimTokenSymbol }}</strong>
+          {{ claimableAmount }} {{ claimTokenSymbol }}
         </p>
       </ng-container>
 
       <ng-container *ngIf="remoteTree.metadata.tokenType === '721'">
         <p>
           Claimable NFT ID:
-          <strong>{{ claimableAmount }}</strong> of {{ claimTokenSymbol }}
+          {{ claimableAmount }} of {{ claimTokenSymbol }}
         </p>
       </ng-container>
     </div>
 
-    <!-- Claim Button (fixed) -->
-    <button
-      (click)="clickClaim()"
-      style="
-        height: 44px;
-        padding: 0 24px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        background: #4e35f2;
-        color: #ffffff;
-        font-weight: 600;
-      "
-    >
+    <button (click)="clickClaim()">
       Claim
     </button>
 
   </ng-container>
 
   <!-- Already Claimed -->
-  <p *ngIf="finishedCheckingClaim && claimed" style="margin-top: 16px;">
+  <p *ngIf="finishedCheckingClaim && claimed">
     This address has already claimed from this airdrop.
   </p>
 
@@ -134,19 +88,7 @@
         You can sweep the unclaimed tokens into your wallet.
       </p>
 
-      <button
-        (click)="clickSweep()"
-        style="
-          height: 44px;
-          padding: 0 24px;
-          border-radius: 8px;
-          border: none;
-          cursor: pointer;
-          background: #4e35f2;
-          color: #ffffff;
-          font-weight: 600;
-        "
-      >
+      <button (click)="clickSweep()">
         Sweep
       </button>
     </div>

@@ -42,9 +42,10 @@
       style="
         display: flex;
         align-items: center;
+        gap: 8px;
         border: 1px solid #4e35f2;
         border-radius: 8px;
-        overflow: hidden;
+        padding: 6px;
       "
     >
       <input
@@ -61,15 +62,19 @@
         "
       />
 
+      <!-- Check Button (fixed) -->
       <button
         (click)="clickCheck()"
         style="
+          height: 40px;
+          padding: 0 18px;
+          border-radius: 8px;
           border: none;
-          padding: 0 16px;
-          height: 100%;
           cursor: pointer;
           background: #4e35f2;
-          color: #fff;
+          color: #ffffff;
+          font-weight: 500;
+          white-space: nowrap;
         "
       >
         Check
@@ -97,7 +102,20 @@
       </ng-container>
     </div>
 
-    <button (click)="clickClaim()">
+    <!-- Claim Button (fixed) -->
+    <button
+      (click)="clickClaim()"
+      style="
+        height: 44px;
+        padding: 0 24px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background: #4e35f2;
+        color: #ffffff;
+        font-weight: 600;
+      "
+    >
       Claim
     </button>
 
@@ -116,7 +134,19 @@
         You can sweep the unclaimed tokens into your wallet.
       </p>
 
-      <button (click)="clickSweep()">
+      <button
+        (click)="clickSweep()"
+        style="
+          height: 44px;
+          padding: 0 24px;
+          border-radius: 8px;
+          border: none;
+          cursor: pointer;
+          background: #4e35f2;
+          color: #ffffff;
+          font-weight: 600;
+        "
+      >
         Sweep
       </button>
     </div>

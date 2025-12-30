@@ -13,16 +13,11 @@
 
   <!-- Wallet -->
   <button
+    class="wallet-pill"
     (click)="connectWallet()"
-    style="
-      height: 40px;
-      padding: 0 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    "
   >
     <ng-container *ngIf="wallet.connected; else connect">
-      0x…{{ wallet.userAddress.slice(-4) }}
+      0x…{{ wallet.userAddress.slice(-7) }}
     </ng-container>
 
     <ng-template #connect>
@@ -30,3 +25,4 @@
     </ng-template>
   </button>
 </div>
+

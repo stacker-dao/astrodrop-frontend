@@ -6,6 +6,18 @@
   margin-right: auto;
 }
 
+/* === App Header Title === */
+.app-title {
+  color: #4e35f2; /* brand violet */
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Optional subtle hover polish */
+a:hover .app-title {
+  color: #6b5cff;
+}
+
 /* === Core Button === */
 .glow-on-hover {
   width: 220px;
